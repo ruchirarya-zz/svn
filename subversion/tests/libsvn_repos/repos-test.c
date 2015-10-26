@@ -2215,7 +2215,7 @@ commit_continue_txn(const svn_test_opts_t *opts,
 
   SVN_ERR(editor->add_file("/f1", root_baton, NULL, SVN_INVALID_REVNUM,
                            subpool, &file_baton));
-  SVN_ERR(editor->close_file(file_baton, NULL, subpool));
+  SVN_ERR(editor->close_file(file_baton, NULL, NULL, subpool));
   /* This should leave the transaction. */
   SVN_ERR(editor->abort_edit(edit_baton, subpool));
 
@@ -2232,7 +2232,7 @@ commit_continue_txn(const svn_test_opts_t *opts,
 
   SVN_ERR(editor->add_file("/f2", root_baton, NULL, SVN_INVALID_REVNUM,
                            subpool, &file_baton));
-  SVN_ERR(editor->close_file(file_baton, NULL, subpool));
+  SVN_ERR(editor->close_file(file_baton, NULL, NULL, subpool));
 
   /* Finally, commit it. */
   SVN_ERR(editor->close_edit(edit_baton, subpool));
@@ -2803,7 +2803,7 @@ prop_validation_commit_with_revprop(const char *filename,
                            SVN_INVALID_REVNUM, pool,
                            &file_baton));
 
-  SVN_ERR(editor->close_file(file_baton, NULL, pool));
+  SVN_ERR(editor->close_file(file_baton, NULL, NULL, pool));
 
   SVN_ERR(editor->close_directory(root_baton, pool));
 

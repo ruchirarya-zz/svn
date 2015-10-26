@@ -267,6 +267,7 @@ apply_textdelta(void *file_baton,
 static svn_error_t *
 close_file(void *file_baton,
            const char *text_checksum,
+           const char *base_digest_hex_chaining,
            apr_pool_t *pool)
 {
   struct file_baton *fb = file_baton;
@@ -279,7 +280,7 @@ close_file(void *file_baton,
                             text_checksum));
 
   SVN_ERR(eb->wrapped_editor->close_file(fb->wrapped_file_baton,
-                                         text_checksum, pool));
+                                         text_checksum, base_digest_hex_chaining, pool));
 
   return SVN_NO_ERROR;
 }

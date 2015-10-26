@@ -118,7 +118,7 @@ do_url_propset(const char *url,
       SVN_ERR(editor->open_file(uri_basename, root_baton,
                                 base_revision_for_url, pool, &file_baton));
       SVN_ERR(editor->change_file_prop(file_baton, propname, propval, pool));
-      SVN_ERR(editor->close_file(file_baton, NULL, pool));
+      SVN_ERR(editor->close_file(file_baton, NULL, NULL, pool));
     }
   else
     {

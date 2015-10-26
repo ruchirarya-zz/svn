@@ -299,6 +299,7 @@ add_subdir(svn_fs_root_t *source_root,
           void *delta_handler_baton, *file_baton;
           svn_txdelta_stream_t *delta_stream;
           svn_checksum_t *checksum;
+          const char *base_digest_hex_chaining = NULL;
 
           SVN_ERR(editor->add_file(new_edit_path, *dir_baton, NULL,
                                    SVN_INVALID_REVNUM, pool, &file_baton));
@@ -330,7 +331,7 @@ add_subdir(svn_fs_root_t *source_root,
           SVN_ERR(svn_fs_file_checksum(&checksum, svn_checksum_md5, target_root,
                                        new_edit_path, TRUE, pool));
           SVN_ERR(editor->close_file(file_baton,
-                                     svn_checksum_to_cstring(checksum, pool),
+                                     svn_checksum_to_cstring(checksum, pool), base_digest_hex_chaining,
                                      pool));
         }
       else
@@ -785,10 +786,11 @@ path_driver_cb_func(void **dir_baton,
   if (file_baton)
     {
       svn_checksum_t *checksum;
+      const char *base_digest_hex_chaining = NULL;
       SVN_ERR(svn_fs_file_checksum(&checksum, svn_checksum_md5, root, edit_path,
                                    TRUE, pool));
       SVN_ERR(editor->close_file(file_baton,
-                                 svn_checksum_to_cstring(checksum, pool),
+                                 svn_checksum_to_cstring(checksum, pool), base_digest_hex_chaining,
                                  pool));
     }
 

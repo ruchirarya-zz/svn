@@ -687,7 +687,7 @@ path_driver_cb_func(void **dir_baton,
                                                        SVN_PROP_MERGEINFO,
                                                        path_info->mergeinfo,
                                                        pool));
-          SVN_ERR(cb_baton->editor->close_file(file_baton, NULL, pool));
+          SVN_ERR(cb_baton->editor->close_file(file_baton, NULL, NULL, pool));
         }
       else
         {

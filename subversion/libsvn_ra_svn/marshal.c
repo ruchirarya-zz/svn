@@ -1689,15 +1689,18 @@ svn_error_t *
 svn_ra_svn__write_cmd_close_file(svn_ra_svn_conn_t *conn,
                                  apr_pool_t *pool,
                                  const char *token,
-                                 const char *text_checksum)
+                                 const char *text_checksum,
+                                 const char *base_digest_hex_chaining)
 {
   SVN_ERR(writebuf_write_short_string(conn, pool, "( close-file ( ", 15));
   SVN_ERR(write_tuple_cstring(conn, pool, token));
   SVN_ERR(write_tuple_start_list(conn, pool));
   SVN_ERR(write_tuple_cstring_opt(conn, pool, text_checksum));
+  SVN_ERR(write_tuple_cstring_opt(conn, pool, base_digest_hex_chaining));
   SVN_ERR(write_tuple_end_list(conn, pool));
   SVN_ERR(writebuf_write_short_string(conn, pool, ") ) ", 4));
-
+/*printf("\n\n%s\n\n", text_checksum);
+  printf("\n\n%s\n\n", base_digest_hex_chaining);*/
   return SVN_NO_ERROR;
 }
 

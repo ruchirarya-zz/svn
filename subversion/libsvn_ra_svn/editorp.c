@@ -360,13 +360,14 @@ static svn_error_t *ra_svn_change_file_prop(void *file_baton,
 
 static svn_error_t *ra_svn_close_file(void *file_baton,
                                       const char *text_checksum,
+                                      const char *base_digest_hex_chaining,
                                       apr_pool_t *pool)
 {
   ra_svn_baton_t *b = file_baton;
 
   SVN_ERR(check_for_error(b->eb, pool));
   SVN_ERR(svn_ra_svn__write_cmd_close_file(b->conn, pool,
-                                           b->token, text_checksum));
+                                           b->token, text_checksum, base_digest_hex_chaining));
   return SVN_NO_ERROR;
 }
 
@@ -783,6 +784,7 @@ static svn_error_t *ra_svn_handle_close_file(svn_ra_svn_conn_t *conn,
   const char *token;
   ra_svn_token_entry_t *entry;
   const char *text_checksum;
+  const char *base_digest_hex_chaining = NULL;
 
   /* Parse arguments and look up the file token. */
   SVN_ERR(svn_ra_svn__parse_tuple(params, pool, "c(?c)",
@@ -790,7 +792,7 @@ static svn_error_t *ra_svn_handle_close_file(svn_ra_svn_conn_t *conn,
   SVN_ERR(lookup_token(ds, token, TRUE, &entry));
 
   /* Close the file and destroy the baton. */
-  SVN_CMD_ERR(ds->editor->close_file(entry->baton, text_checksum, pool));
+  SVN_CMD_ERR(ds->editor->close_file(entry->baton, text_checksum, base_digest_hex_chaining, pool));
   svn_hash_sets(ds->tokens, token, NULL);
   if (--ds->file_refs == 0)
     svn_pool_clear(ds->file_pool);

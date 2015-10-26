@@ -1695,8 +1695,9 @@ apply_change(void **dir_baton,
     {
       const char *digest = svn_checksum_to_cstring(change->checksum,
                                                    scratch_pool);
+      const char *base_digest_hex_chaining = NULL;
 
-      SVN_ERR(eb->deditor->close_file(file_baton, digest, scratch_pool));
+      SVN_ERR(eb->deditor->close_file(file_baton, digest, base_digest_hex_chaining, scratch_pool));
     }
 
   return SVN_NO_ERROR;

@@ -1789,7 +1789,7 @@ do_item_commit(void **dir_baton,
     {
       /* Close any outstanding file batons that didn't get caught by
          the "has local mods" conditional above. */
-      err = editor->close_file(file_baton, NULL, file_pool);
+      err = editor->close_file(file_baton, NULL, NULL, file_pool);
 
       if (err)
         goto fixup_error;

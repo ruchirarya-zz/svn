@@ -1003,6 +1003,7 @@ svn_wc__internal_transmit_text_deltas(const char **tempfile,
   svn_error_t *err;
   svn_stream_t *base_stream;  /* delta source */
   svn_stream_t *local_stream;  /* delta target: LOCAL_ABSPATH transl. to NF */
+  const char *base_digest_hex_chaining = NULL;
 
   /* Translated input */
   SVN_ERR(svn_wc__internal_translated_stream(&local_stream, db,
@@ -1084,11 +1085,11 @@ svn_wc__internal_transmit_text_deltas(const char **tempfile,
        * digest to apply_textdelta(), wouldn't we? */
       base_digest_hex = svn_checksum_to_cstring_display(expected_md5_checksum,
                                                         scratch_pool);
-
+      base_digest_hex_chaining = base_digest_hex;
     SVN_ERR(editor->apply_textdelta(file_baton, base_digest_hex, scratch_pool,
                                     &handler, &wh_baton));
   }
-
+/*printf("\n%s\n", base_digest_hex_chaining);*/
   /* Run diff processing, throwing windows at the handler. */
   err = svn_txdelta_run(base_stream, local_stream,
                         handler, wh_baton,
@@ -1158,6 +1159,7 @@ svn_wc__internal_transmit_text_deltas(const char **tempfile,
              editor->close_file(file_baton,
                                 svn_checksum_to_cstring(local_md5_checksum,
                                                         scratch_pool),
+                                base_digest_hex_chaining,
                                 scratch_pool));
 }
 

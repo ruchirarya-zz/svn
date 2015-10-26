@@ -419,10 +419,11 @@ start_replay(svn_ra_serf__xml_parser_t *parser,
     {
       replay_info_t *info = parser->state->private;
       const char *checksum;
+      const char *base_digest_hex_chaining = NULL;
 
       checksum = svn_xml_get_attr_value("checksum", attrs);
 
-      SVN_ERR(ctx->editor->close_file(info->baton, checksum, scratch_pool));
+      SVN_ERR(ctx->editor->close_file(info->baton, checksum, base_digest_hex_chaining, scratch_pool));
 
       svn_ra_serf__xml_pop_state(parser);
 

@@ -427,12 +427,13 @@ apply_textdelta(void *file_baton,
 static svn_error_t *
 close_file(void *file_baton,
            const char *text_checksum,
+           const char *base_digest_hex_chaining,
            apr_pool_t *pool)
 {
   node_baton_t *fb = file_baton;
   edit_baton_t *eb = fb->edit_baton;
   return eb->wrapped_editor->close_file(fb->wrapped_node_baton,
-                                        text_checksum, pool);
+                                        text_checksum, base_digest_hex_chaining, pool);
 }
 
 static svn_error_t *

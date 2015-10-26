@@ -1068,6 +1068,7 @@ typedef struct svn_delta_editor_t
    */
   svn_error_t *(*close_file)(void *file_baton,
                              const char *text_checksum,
+                             const char *base_digest_hex_chaining,
                              apr_pool_t *scratch_pool);
 
   /** In the directory represented by @a parent_baton, indicate that

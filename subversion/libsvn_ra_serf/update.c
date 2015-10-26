@@ -1065,7 +1065,7 @@ close_updated_file(report_info_t *info,
 
   /* Close the file via the editor. */
   SVN_ERR(info->dir->report_context->update_editor->close_file(
-            info->file_baton, info->final_checksum, scratch_pool));
+            info->file_baton, info->final_checksum, NULL, scratch_pool));
 
   /* We're done with our editor pool. */
   svn_pool_destroy(info->editor_pool);
