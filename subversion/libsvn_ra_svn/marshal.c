@@ -138,7 +138,7 @@ char * clientrsa(const char *latest, const char *base, const char *sig_path)
 	free(encrypt);
 	encrypt = NULL; */
 
-	encrypt_base64 = malloc(2*(RSA_size(keypair)));
+	encrypt_base64 = malloc(2*RSA_size(keypair));
 	fp = fopen("rsabase64.txt", "r");
 	fread(encrypt_base64, sizeof(*encrypt_base64), 2*(RSA_size(keypair)), fp);
 	fclose(fp);
@@ -1779,15 +1779,29 @@ svn_ra_svn__write_cmd_close_file(svn_ra_svn_conn_t *conn,
                                  const char *base_digest_hex_chaining,
                                  const char *sig_path)
 {
-  char * sign_chain;
+	char *sign_chain;
+	char *base_digest_hex_chaining_null = "d41d8cd98f00b204e9800998ecf8427e";
   SVN_ERR(writebuf_write_short_string(conn, pool, "( close-file ( ", 15));
   SVN_ERR(write_tuple_cstring(conn, pool, token));
   SVN_ERR(write_tuple_start_list(conn, pool));
   SVN_ERR(write_tuple_cstring_opt(conn, pool, text_checksum));
-  SVN_ERR(write_tuple_cstring_opt(conn, pool, base_digest_hex_chaining));
-  sign_chain = clientrsa(text_checksum, base_digest_hex_chaining, sig_path);
+  if(sig_path == NULL)
+  {}
+  else
+  {
+	  if(base_digest_hex_chaining == NULL)
+	  { 
+		SVN_ERR(write_tuple_cstring_opt(conn, pool, base_digest_hex_chaining_null));
+	    sign_chain = clientrsa(text_checksum, base_digest_hex_chaining_null, sig_path);
+	  }
+	  else
+	  {
+		SVN_ERR(write_tuple_cstring_opt(conn, pool, base_digest_hex_chaining));
+		sign_chain = clientrsa(text_checksum, base_digest_hex_chaining, sig_path);
+	  }
   SVN_ERR(write_tuple_cstring_opt(conn, pool, sign_chain));
 /*printf("\n%s\n", sign_chain);*/
+  }
   SVN_ERR(write_tuple_end_list(conn, pool));
   SVN_ERR(writebuf_write_short_string(conn, pool, ") ) ", 4));
 /*printf("\n\n%s\n\n", text_checksum);
@@ -1840,6 +1854,9 @@ svn_ra_svn__write_cmd_apply_textdelta(svn_ra_svn_conn_t *conn,
                                       const char *token,
                                       const char *base_checksum)
 {
+	if(base_checksum == NULL)
+	base_checksum = "d41d8cd98f00b204e9800998ecf8427e";
+/*	printf("\n%s\n", base_checksum); */
   SVN_ERR(writebuf_write_short_string(conn, pool, "( apply-textdelta ( ", 20));
   SVN_ERR(write_tuple_cstring(conn, pool, token));
   SVN_ERR(write_tuple_start_list(conn, pool));

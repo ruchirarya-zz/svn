@@ -791,7 +791,7 @@ static svn_error_t *ra_svn_handle_close_file(svn_ra_svn_conn_t *conn,
   const char *sig_path;
   
   /* Parse arguments and look up the file token. */
-  SVN_ERR(svn_ra_svn__parse_tuple(params, pool, "c(?ccc)",
+  SVN_ERR(svn_ra_svn__parse_tuple(params, pool, "c(?c?cc)",
                                   &token, &text_checksum, &base_digest_hex_chaining, &sig_path));
   SVN_ERR(lookup_token(ds, token, TRUE, &entry));
 
