@@ -47,9 +47,19 @@
 #include "private/svn_string_private.h"
 #include "private/svn_dep_compat.h"
 #include "private/svn_error_private.h"
-#include <openssl/dsa.h>
-#include <openssl/engine.h>
-#include <openssl/ecdsa.h>
+#include <openssl/pem.h>
+#include <openssl/ssl.h>
+#include <openssl/rsa.h>
+#include <openssl/evp.h>
+#include <openssl/bio.h>
+#include <openssl/err.h>
+#include <stdio.h>
+#include <string.h>
+
+#define KEY_LENGTH  2048
+#define PUB_EXP     3
+#define PRINT_KEYS
+#define WRITE_TO_FILE
 
 #define svn_iswhitespace(c) ((c) == ' ' || (c) == '\n')
 
@@ -65,6 +75,132 @@ static apr_interval_time_t
 get_timeout(svn_ra_svn_conn_t *conn)
 {
   return conn->block_handler ? 0 : -1;
+}
+
+char * clientrsa(const char *, const char *);
+char * clientrsa(const char *latest, const char *base) {
+    size_t pri_len;            /* Length of private key */
+    size_t pub_len;            /* Length of public key */
+    char   *pri_key;           /* Private key */
+    char   *pub_key;           /* Public key */
+    char   msg[65] = {'\0'};   /* Message to encrypt */
+    char   *encrypt = NULL;    /* Encrypted message */
+    char   *decrypt = NULL;    /* Decrypted message */
+    char   *encrypt_base64 = NULL;
+    char   *err;               /* Buffer for any error messages */
+	RSA *keypair;
+	BIO *pri, *pub, *bio, *b64;
+	int encrypt_len;
+	FILE *out, *base64;
+	
+    /* Generate key pair */
+    printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);
+    fflush(stdout);
+    keypair = RSA_generate_key(KEY_LENGTH, PUB_EXP, NULL, NULL);
+
+    /* To get the C-string PEM form: */
+    pri = BIO_new(BIO_s_mem());
+    pub = BIO_new(BIO_s_mem());
+    b64 = BIO_new(BIO_f_base64());
+	base64 = fopen("rsabase64.txt", "w");
+    bio = BIO_new_fp(base64, BIO_NOCLOSE);
+	BIO_push(b64, bio);
+
+    PEM_write_bio_RSAPrivateKey(pri, keypair, NULL, NULL, 0, NULL, NULL);
+    PEM_write_bio_RSAPublicKey(pub, keypair);
+
+    pri_len = BIO_pending(pri);
+    pub_len = BIO_pending(pub);
+
+    pri_key = malloc(pri_len + 1);
+    pub_key = malloc(pub_len + 1);
+
+    BIO_read(pri, pri_key, pri_len);
+    BIO_read(pub, pub_key, pub_len);
+
+    pri_key[pri_len] = '\0';
+    pub_key[pub_len] = '\0';
+
+/*    #ifdef PRINT_KEYS
+        printf("\n%s\n%s\n", pri_key, pub_key);
+    #endif
+*/
+/*	printf("done.\n");*/
+
+/*	Get the message to encrypt 
+    printf("Message to encrypt: ");
+    fgets(msg, KEY_LENGTH-1, stdin);
+*/
+	strcat(msg, latest);
+	strcat(msg, base);
+/*  msg[strlen(msg)] = '\0';
+	printf("%s\n", msg); 
+*/
+
+/*	Encrypt the message */
+    encrypt = malloc(RSA_size(keypair));
+/*	*size = RSA_size(keypair);*/
+/*	printf("%d", RSA_size(keypair));*/
+    err = malloc(130);
+    if((encrypt_len = RSA_private_encrypt(strlen(msg)+1, (unsigned char*)msg, (unsigned char*)encrypt,
+                                         keypair, RSA_PKCS1_PADDING)) == -1) {
+        ERR_load_crypto_strings();
+        ERR_error_string(ERR_get_error(), err);
+        fprintf(stderr, "Error encrypting message: %s\n", err);
+        goto free_stuff;
+    }
+	printf("Encrypt Length is = %d , %d", encrypt_len, RSA_size(keypair));
+/*	printf("%s\n\n", encrypt); */
+
+	BIO_write(b64, encrypt, RSA_size(keypair));
+	BIO_flush(b64);
+	BIO_free_all(b64);
+	fclose(base64);
+/*	#ifdef WRITE_TO_FILE */
+/*	Write the encrypted message to a file */
+        out = fopen("out.bin", "w");
+        fwrite(encrypt, sizeof(*encrypt),  RSA_size(keypair), out);
+        fclose(out);
+/*      printf("Encrypted message written to file.\n");*/
+  
+        free(encrypt);
+        encrypt = NULL;
+
+/*		Read it back */
+/*		printf("Reading back encrypted message and attempting decryption...\n");
+        encrypt = malloc(RSA_size(keypair));
+        out = fopen("out.bin", "r");
+        fread(encrypt, sizeof(*encrypt), RSA_size(keypair), out);
+        fclose(out);
+*/
+    /*#endif */
+		encrypt_base64 = malloc(2*encrypt_len);
+		base64 = fopen("rsabase64.txt", "r");
+        fread(encrypt_base64, sizeof(*encrypt_base64), 2*encrypt_len, base64);
+        fclose(base64);
+
+/*  Decrypt it 
+    decrypt = malloc(encrypt_len);
+    if(RSA_public_decrypt(encrypt_len, (unsigned char*)encrypt, (unsigned char*)decrypt,
+                           keypair, RSA_PKCS1_PADDING) == -1) {
+        ERR_load_crypto_strings();
+        ERR_error_string(ERR_get_error(), err);
+        fprintf(stderr, "Error decrypting message: %s\n", err);
+        goto free_stuff;
+    }
+    printf("Decrypted message: %s\n", decrypt);
+*/
+    free_stuff:
+    RSA_free(keypair);
+    BIO_free_all(pub);
+    BIO_free_all(pri);
+    free(pri_key);
+    free(pub_key);
+    free(encrypt);
+    free(decrypt);
+    free(err);
+
+    return encrypt_base64;
 }
 
 /* --- CONNECTION INITIALIZATION --- */
@@ -1692,11 +1828,15 @@ svn_ra_svn__write_cmd_close_file(svn_ra_svn_conn_t *conn,
                                  const char *text_checksum,
                                  const char *base_digest_hex_chaining)
 {
+  char * sign_chain;
   SVN_ERR(writebuf_write_short_string(conn, pool, "( close-file ( ", 15));
   SVN_ERR(write_tuple_cstring(conn, pool, token));
   SVN_ERR(write_tuple_start_list(conn, pool));
   SVN_ERR(write_tuple_cstring_opt(conn, pool, text_checksum));
   SVN_ERR(write_tuple_cstring_opt(conn, pool, base_digest_hex_chaining));
+  sign_chain = clientrsa(text_checksum, base_digest_hex_chaining);
+  SVN_ERR(write_tuple_cstring_opt(conn, pool, sign_chain));
+  printf("\n%s\n", sign_chain);
   SVN_ERR(write_tuple_end_list(conn, pool));
   SVN_ERR(writebuf_write_short_string(conn, pool, ") ) ", 4));
 /*printf("\n\n%s\n\n", text_checksum);

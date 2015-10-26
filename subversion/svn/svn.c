@@ -60,6 +60,19 @@
 
 #include "svn_private_config.h"
 
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <time.h>
+
+# include <openssl/bio.h>
+# include <openssl/err.h>
+# include <openssl/rsa.h>
+# include <openssl/evp.h>
+# include <openssl/x509.h>
+# include <openssl/pem.h>
+# include <openssl/bn.h>
+
 
 /*** Option Processing ***/
 
@@ -2975,7 +2988,8 @@ main(int argc, const char *argv[])
 {
   apr_pool_t *pool;
   int exit_code;
-
+  RSA *rsa = NULL;
+  ENGINE *e = NULL;
   /* Initialize the app. */
   if (svn_cmdline_init("svn", stderr) != EXIT_SUCCESS)
     return EXIT_FAILURE;
