@@ -79,6 +79,7 @@ get_ra_editor(const svn_delta_editor_t **editor,
               svn_ra_session_t *ra_session,
               svn_client_ctx_t *ctx,
               const char *log_msg,
+            /*  const char *sigpath, */
               const apr_array_header_t *commit_items,
               const apr_hash_t *revprop_table,
               apr_hash_t *lock_tokens,
@@ -580,6 +581,7 @@ svn_client_commit6(const apr_array_header_t *targets,
   struct capture_baton_t cb;
   svn_ra_session_t *ra_session;
   const char *log_msg;
+/*  const char *sigpath; */
   const char *base_abspath;
   const char *base_url;
   apr_array_header_t *rel_targets;

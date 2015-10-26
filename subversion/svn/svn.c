@@ -401,7 +401,7 @@ const apr_getopt_option_t svn_cl__options[] =
   */
 
   {"cl",            opt_changelist, 1, NULL},
-  {"signature",       's', 0, N_("use private key to digitally sign changes to be committed")},
+  {"signature",       's', 1, N_("specify path of Private Key ARG to sign commits")},
   {"verify",       'y', 0, N_("verify signature of committed changes using public keys")},
 
   {0,               0, 0, 0},
@@ -1762,7 +1762,7 @@ sub_main(int argc, const char *argv[], apr_pool_t *pool)
   apr_array_header_t *received_opts;
   int i;
   const svn_opt_subcommand_desc2_t *subcommand = NULL;
-  const char *dash_m_arg = NULL, *dash_F_arg = NULL;
+  const char *dash_m_arg = NULL, *dash_F_arg = NULL, *dash_s_arg = NULL;
   svn_cl__cmd_baton_t command_baton;
   svn_auth_baton_t *ab;
   svn_config_t *cfg_config;
@@ -1860,6 +1860,10 @@ sub_main(int argc, const char *argv[], apr_pool_t *pool)
         opt_state.message = apr_pstrdup(pool, opt_arg);
         dash_m_arg = opt_arg;
         break;
+      case 's':
+		opt_state.sigpath = apr_pstrdup(pool, opt_arg);
+		dash_s_arg = opt_arg;
+		break;
       case 'c':
         {
           apr_array_header_t *change_revs =
