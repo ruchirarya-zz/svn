@@ -47,6 +47,9 @@
 #include "private/svn_string_private.h"
 #include "private/svn_dep_compat.h"
 #include "private/svn_error_private.h"
+#include <openssl/dsa.h>
+#include <openssl/engine.h>
+#include <openssl/ecdsa.h>
 
 #define svn_iswhitespace(c) ((c) == ' ' || (c) == '\n')
 

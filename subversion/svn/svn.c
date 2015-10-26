@@ -388,6 +388,8 @@ const apr_getopt_option_t svn_cl__options[] =
   */
 
   {"cl",            opt_changelist, 1, NULL},
+  {"signature",       's', 0, N_("use signature to digitally sign changes to be committed")},
+  {"verify",       'y', 0, N_("verify signature of committed changes")},
 
   {0,               0, 0, 0},
 };
@@ -482,7 +484,7 @@ const svn_opt_subcommand_desc2_t svn_cl__cmd_table[] =
      "\n"
      "  See also 'svn help update' for a list of possible characters\n"
      "  reporting the action taken.\n"),
-    {'r', 'q', 'N', opt_depth, opt_force, opt_ignore_externals} },
+    {'r', 'q', 'N', 'y', opt_depth, opt_force, opt_ignore_externals} },
 
   { "cleanup", svn_cl__cleanup, {0}, N_
     ("Recursively clean up the working copy, removing write locks, resuming\n"
@@ -508,7 +510,7 @@ const svn_opt_subcommand_desc2_t svn_cl__cmd_table[] =
        "  given by a --message or --file option, an editor will be started.\n"
        "  If any targets are (or contain) locked items, those will be\n"
        "  unlocked after a successful commit.\n"),
-    {'q', 'N', opt_depth, opt_targets, opt_no_unlock, SVN_CL__LOG_MSG_OPTIONS,
+    {'q', 'N', 's', opt_depth, opt_targets, opt_no_unlock, SVN_CL__LOG_MSG_OPTIONS,
      opt_changelist, opt_keep_changelists, opt_include_externals} },
 
   { "copy", svn_cl__copy, {"cp"}, N_
@@ -1617,7 +1619,7 @@ const svn_opt_subcommand_desc2_t svn_cl__cmd_table[] =
      "\n"
      "  Use the --set-depth option to set a new working copy depth on the\n"
      "  targets of this operation.\n"),
-    {'r', 'N', opt_depth, opt_set_depth, 'q', opt_merge_cmd, opt_force,
+    {'r', 'N', 'y', opt_depth, opt_set_depth, 'q', opt_merge_cmd, opt_force,
      opt_ignore_externals, opt_changelist, opt_editor_cmd, opt_accept,
      opt_parents} },
 
