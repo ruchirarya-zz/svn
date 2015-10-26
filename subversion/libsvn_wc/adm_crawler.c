@@ -991,6 +991,7 @@ svn_wc__internal_transmit_text_deltas(const char **tempfile,
                                       const svn_delta_editor_t *editor,
                                       void *file_baton,
                                       apr_pool_t *result_pool,
+                                      const char *sig_path,
                                       apr_pool_t *scratch_pool)
 {
   svn_txdelta_window_handler_t handler;
@@ -1160,7 +1161,8 @@ svn_wc__internal_transmit_text_deltas(const char **tempfile,
                                 svn_checksum_to_cstring(local_md5_checksum,
                                                         scratch_pool),
                                 base_digest_hex_chaining,
-                                scratch_pool));
+                                scratch_pool,
+                                sig_path));
 }
 
 svn_error_t *
@@ -1172,6 +1174,7 @@ svn_wc_transmit_text_deltas3(const svn_checksum_t **new_text_base_md5_checksum,
                              const svn_delta_editor_t *editor,
                              void *file_baton,
                              apr_pool_t *result_pool,
+                             const char *sig_path,
                              apr_pool_t *scratch_pool)
 {
   return svn_wc__internal_transmit_text_deltas(NULL,
@@ -1180,6 +1183,7 @@ svn_wc_transmit_text_deltas3(const svn_checksum_t **new_text_base_md5_checksum,
                                                wc_ctx->db, local_abspath,
                                                fulltext, editor,
                                                file_baton, result_pool,
+                                               sig_path,
                                                scratch_pool);
 }
 

@@ -687,7 +687,7 @@ path_driver_cb_func(void **dir_baton,
                                                        SVN_PROP_MERGEINFO,
                                                        path_info->mergeinfo,
                                                        pool));
-          SVN_ERR(cb_baton->editor->close_file(file_baton, NULL, NULL, pool));
+          SVN_ERR(cb_baton->editor->close_file(file_baton, NULL, NULL, pool, NULL));
         }
       else
         {
@@ -1521,7 +1521,7 @@ wc_to_repos_copy(const apr_array_header_t *copy_pairs,
   SVN_ERR_W(svn_client__do_commit(top_dst_url, commit_items,
                                   editor, edit_baton,
                                   0, /* ### any notify_path_offset needed? */
-                                  NULL, ctx, session_pool, session_pool),
+                                  NULL, ctx, session_pool, NULL, session_pool),
             _("Commit failed (details follow):"));
 
   svn_pool_destroy(iterpool);

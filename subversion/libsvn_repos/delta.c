@@ -819,6 +819,7 @@ add_file_or_dir(struct context *c, void *dir_baton,
       void *file_baton;
       svn_checksum_t *checksum;
 const char *base_digest_hex_chaining = NULL;
+const char *sig_path = NULL;
       SVN_ERR(context->editor->add_file(edit_path, dir_baton,
                                         NULL, SVN_INVALID_REVNUM, pool,
                                         &file_baton));
@@ -827,7 +828,7 @@ const char *base_digest_hex_chaining = NULL;
                                    context->target_root, target_path,
                                    TRUE, pool));
       return context->editor->close_file
-             (file_baton, svn_checksum_to_cstring(checksum, pool), base_digest_hex_chaining, pool);
+             (file_baton, svn_checksum_to_cstring(checksum, pool), base_digest_hex_chaining, pool, sig_path);
     }
 }
 
@@ -878,6 +879,7 @@ replace_file_or_dir(struct context *c,
       void *file_baton;
       svn_checksum_t *checksum;
 const char *base_digest_hex_chaining = NULL;
+const char *sig_path = NULL;
       SVN_ERR(c->editor->open_file(edit_path, dir_baton, base_revision,
                                    pool, &file_baton));
       SVN_ERR(delta_files(c, file_baton, source_path, target_path, pool));
@@ -885,7 +887,7 @@ const char *base_digest_hex_chaining = NULL;
                                    c->target_root, target_path, TRUE,
                                    pool));
       return c->editor->close_file
-             (file_baton, svn_checksum_to_cstring(checksum, pool), base_digest_hex_chaining, pool);
+             (file_baton, svn_checksum_to_cstring(checksum, pool), base_digest_hex_chaining, pool, sig_path);
     }
 }
 

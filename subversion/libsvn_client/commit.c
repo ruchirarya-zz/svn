@@ -79,7 +79,7 @@ get_ra_editor(const svn_delta_editor_t **editor,
               svn_ra_session_t *ra_session,
               svn_client_ctx_t *ctx,
               const char *log_msg,
-            /*  const char *sigpath, */
+              const char *sig_path,
               const apr_array_header_t *commit_items,
               const apr_hash_t *revprop_table,
               apr_hash_t *lock_tokens,
@@ -574,6 +574,7 @@ svn_client_commit6(const apr_array_header_t *targets,
                    svn_commit_callback2_t commit_callback,
                    void *commit_baton,
                    svn_client_ctx_t *ctx,
+                   const char *sig_path,
                    apr_pool_t *pool)
 {
   const svn_delta_editor_t *editor;
@@ -581,7 +582,6 @@ svn_client_commit6(const apr_array_header_t *targets,
   struct capture_baton_t cb;
   svn_ra_session_t *ra_session;
   const char *log_msg;
-/*  const char *sigpath; */
   const char *base_abspath;
   const char *base_url;
   apr_array_header_t *rel_targets;
@@ -945,7 +945,7 @@ svn_client_commit6(const apr_array_header_t *targets,
 
   cmt_err = svn_error_trace(
               get_ra_editor(&editor, &edit_baton, ra_session, ctx,
-                            log_msg, commit_items, revprop_table,
+                            log_msg, sig_path, commit_items, revprop_table,
                             lock_tokens, keep_locks, capture_commit_info,
                             &cb, pool));
 
@@ -963,7 +963,7 @@ svn_client_commit6(const apr_array_header_t *targets,
   /* Perform the commit. */
   cmt_err = svn_error_trace(
               svn_client__do_commit(base_url, commit_items, editor, edit_baton,
-                                    notify_prefix, &sha1_checksums, ctx, pool,
+                                    notify_prefix, &sha1_checksums, ctx, pool, sig_path,
                                     iterpool));
 
   /* Handle a successful commit. */

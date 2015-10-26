@@ -1697,7 +1697,7 @@ apply_change(void **dir_baton,
                                                    scratch_pool);
       const char *base_digest_hex_chaining = NULL;
 
-      SVN_ERR(eb->deditor->close_file(file_baton, digest, base_digest_hex_chaining, scratch_pool));
+      SVN_ERR(eb->deditor->close_file(file_baton, digest, base_digest_hex_chaining, scratch_pool, NULL));
     }
 
   return SVN_NO_ERROR;

@@ -309,7 +309,7 @@ drive(struct operation *operation,
             {
               SVN_ERR(change_props(editor, file_baton, child, subpool));
             }
-          SVN_ERR(editor->close_file(file_baton, NULL, NULL, subpool));
+          SVN_ERR(editor->close_file(file_baton, NULL, NULL, subpool, NULL));
         }
       /* If we opened, added, or replaced a directory, we need to
          recurse, apply outstanding propmods, and then close it. */

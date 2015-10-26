@@ -923,6 +923,7 @@ update_entry(report_baton_t *b, svn_revnum_t s_rev, const char *s_path,
   svn_checksum_t *checksum;
   const char *hex_digest;
   const char *base_digest_hex_chaining = NULL;
+  const char *sig_path = NULL;
 
   /* For non-switch operations, follow link_path in the target. */
   if (info && info->link_path && !b->is_switch)
@@ -1072,7 +1073,7 @@ update_entry(report_baton_t *b, svn_revnum_t s_rev, const char *s_path,
                                    t_path, TRUE, pool));
       hex_digest = svn_checksum_to_cstring(checksum, pool);
       return svn_error_trace(b->editor->close_file(new_baton, hex_digest, base_digest_hex_chaining,
-                                                   pool));
+                                                   pool, sig_path));
     }
 }
 

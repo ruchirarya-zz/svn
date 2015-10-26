@@ -347,7 +347,7 @@ sbox_wc_commit_ex(svn_test__sandbox_t *b,
                            TRUE  /* commit_as_operations */,
                            TRUE  /* include_file_externals */,
                            FALSE /* include_dir_externals */,
-                           NULL, NULL, NULL, NULL, ctx, scratch_pool);
+                           NULL, NULL, NULL, NULL, ctx, NULL, scratch_pool);
 
   svn_pool_destroy(scratch_pool);
 

@@ -2145,6 +2145,7 @@ svn_client_commit6(const apr_array_header_t *targets,
                    svn_commit_callback2_t commit_callback,
                    void *commit_baton,
                    svn_client_ctx_t *ctx,
+                   const char *sigpath,
                    apr_pool_t *pool);
 
 /**
@@ -2166,6 +2167,7 @@ svn_client_commit5(const apr_array_header_t *targets,
                    svn_commit_callback2_t commit_callback,
                    void *commit_baton,
                    svn_client_ctx_t *ctx,
+                   const char *sig_path,
                    apr_pool_t *pool);
 
 /**
@@ -2194,6 +2196,7 @@ svn_client_commit4(svn_commit_info_t **commit_info_p,
                    const apr_array_header_t *changelists,
                    const apr_hash_t *revprop_table,
                    svn_client_ctx_t *ctx,
+                   const char *sig_path,
                    apr_pool_t *pool);
 
 /**
@@ -2213,6 +2216,7 @@ svn_client_commit3(svn_commit_info_t **commit_info_p,
                    svn_boolean_t recurse,
                    svn_boolean_t keep_locks,
                    svn_client_ctx_t *ctx,
+                   const char *sig_path,
                    apr_pool_t *pool);
 
 /**
@@ -2230,6 +2234,7 @@ svn_client_commit2(svn_client_commit_info_t **commit_info_p,
                    svn_boolean_t recurse,
                    svn_boolean_t keep_locks,
                    svn_client_ctx_t *ctx,
+                   const char *sig_path,
                    apr_pool_t *pool);
 
 /**
@@ -2244,6 +2249,7 @@ svn_client_commit(svn_client_commit_info_t **commit_info_p,
                   const apr_array_header_t *targets,
                   svn_boolean_t nonrecursive,
                   svn_client_ctx_t *ctx,
+                  const char *sig_path,
                   apr_pool_t *pool);
 
 /** @} */

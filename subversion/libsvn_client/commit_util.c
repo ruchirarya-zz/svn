@@ -1789,7 +1789,7 @@ do_item_commit(void **dir_baton,
     {
       /* Close any outstanding file batons that didn't get caught by
          the "has local mods" conditional above. */
-      err = editor->close_file(file_baton, NULL, NULL, file_pool);
+      err = editor->close_file(file_baton, NULL, NULL, file_pool, NULL);
 
       if (err)
         goto fixup_error;
@@ -1813,6 +1813,7 @@ svn_client__do_commit(const char *base_url,
                       apr_hash_t **sha1_checksums,
                       svn_client_ctx_t *ctx,
                       apr_pool_t *result_pool,
+                      const char *sig_path,
                       apr_pool_t *scratch_pool)
 {
   apr_hash_t *file_mods = apr_hash_make(scratch_pool);
@@ -1891,7 +1892,7 @@ svn_client__do_commit(const char *base_url,
                                          &new_text_base_sha1_checksum,
                                          ctx->wc_ctx, item->path,
                                          fulltext, editor, mod->file_baton,
-                                         result_pool, iterpool);
+                                         result_pool, sig_path, iterpool);
 
       if (err)
         {

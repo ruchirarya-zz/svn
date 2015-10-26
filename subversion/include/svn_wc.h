@@ -7660,6 +7660,7 @@ svn_wc_transmit_text_deltas3(const svn_checksum_t **new_text_base_md5_checksum,
                              const svn_delta_editor_t *editor,
                              void *file_baton,
                              apr_pool_t *result_pool,
+                             const char *sig_path,
                              apr_pool_t *scratch_pool);
 
 /** Similar to svn_wc_transmit_text_deltas3(), but with a relative path
@@ -7686,6 +7687,7 @@ svn_wc_transmit_text_deltas2(const char **tempfile,
                              svn_boolean_t fulltext,
                              const svn_delta_editor_t *editor,
                              void *file_baton,
+                             const char *sig_path,
                              apr_pool_t *pool);
 
 /** Similar to svn_wc_transmit_text_deltas2(), but with @a digest set to NULL.
@@ -7700,6 +7702,7 @@ svn_wc_transmit_text_deltas(const char *path,
                             const svn_delta_editor_t *editor,
                             void *file_baton,
                             const char **tempfile,
+                            const char *sig_path,
                             apr_pool_t *pool);
 
 

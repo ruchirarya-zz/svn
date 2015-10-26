@@ -243,6 +243,7 @@ svn_cl__commit(apr_getopt_t *os,
                             ? NULL : svn_cl__print_commit_info),
                            NULL,
                            ctx,
+                           opt_state->sigpath,
                            pool);
   SVN_ERR(svn_cl__cleanup_log_msg(ctx->log_msg_baton3, err, pool));
 

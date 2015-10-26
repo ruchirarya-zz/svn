@@ -211,6 +211,7 @@ import_file(const svn_delta_editor_t *editor,
   unsigned char digest[APR_MD5_DIGESTSIZE];
   const char *text_checksum;
   const char *base_digest_hex_chaining = NULL;
+  const char *sig_path = NULL;
   apr_hash_t* properties;
   apr_hash_index_t *hi;
 
@@ -280,7 +281,7 @@ import_file(const svn_delta_editor_t *editor,
   text_checksum =
     svn_checksum_to_cstring(svn_checksum__from_digest_md5(digest, pool), pool);
 
-  return editor->close_file(file_baton, text_checksum, base_digest_hex_chaining, pool);
+  return editor->close_file(file_baton, text_checksum, base_digest_hex_chaining, pool, sig_path);
 }
 
 

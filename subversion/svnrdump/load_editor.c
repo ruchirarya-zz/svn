@@ -1149,7 +1149,7 @@ close_node(void *baton)
   if ((nb->kind == svn_node_file) && (nb->file_baton))
     {
       LDR_DBG(("Closing file %p\n", nb->file_baton));
-      SVN_ERR(commit_editor->close_file(nb->file_baton, NULL, NULL, nb->rb->pool));
+      SVN_ERR(commit_editor->close_file(nb->file_baton, NULL, NULL, nb->rb->pool, NULL));
     }
 
   /* The svn_node_dir case is handled in close_revision */

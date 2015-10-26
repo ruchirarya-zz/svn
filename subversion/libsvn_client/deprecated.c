@@ -524,6 +524,7 @@ svn_client_commit5(const apr_array_header_t *targets,
                    svn_commit_callback2_t commit_callback,
                    void *commit_baton,
                    svn_client_ctx_t *ctx,
+                   const char *sig_path,
                    apr_pool_t *pool)
 {
   return svn_client_commit6(targets, depth, keep_locks, keep_changelists,
@@ -531,7 +532,7 @@ svn_client_commit5(const apr_array_header_t *targets,
                             FALSE,  /* include_file_externals */
                             FALSE, /* include_dir_externals */
                             changelists, revprop_table, commit_callback,
-                            commit_baton, ctx, pool);
+                            commit_baton, ctx, sig_path, pool);
 }
 
 svn_error_t *
@@ -543,6 +544,7 @@ svn_client_commit4(svn_commit_info_t **commit_info_p,
                    const apr_array_header_t *changelists,
                    const apr_hash_t *revprop_table,
                    svn_client_ctx_t *ctx,
+                   const char *sig_path,
                    apr_pool_t *pool)
 {
   struct capture_baton_t cb;
@@ -566,7 +568,7 @@ svn_client_commit4(svn_commit_info_t **commit_info_p,
 
   err = svn_client_commit5(targets, depth, keep_locks, keep_changelists, FALSE,
                            changelists, revprop_table,
-                           capture_commit_info, &cb, ctx, pool);
+                           capture_commit_info, &cb, ctx, sig_path, pool);
 
   /* Ensure that the original notification system is in place. */
   ctx->notify_func2 = notify_baton.orig_notify_func2;
@@ -586,12 +588,13 @@ svn_client_commit3(svn_commit_info_t **commit_info_p,
                    svn_boolean_t recurse,
                    svn_boolean_t keep_locks,
                    svn_client_ctx_t *ctx,
+                   const char *sig_path,
                    apr_pool_t *pool)
 {
   svn_depth_t depth = SVN_DEPTH_INFINITY_OR_EMPTY(recurse);
 
   return svn_client_commit4(commit_info_p, targets, depth, keep_locks,
-                            FALSE, NULL, NULL, ctx, pool);
+                            FALSE, NULL, NULL, ctx, sig_path, pool);
 }
 
 svn_error_t *
@@ -600,13 +603,14 @@ svn_client_commit2(svn_client_commit_info_t **commit_info_p,
                    svn_boolean_t recurse,
                    svn_boolean_t keep_locks,
                    svn_client_ctx_t *ctx,
+                   const char *sig_path,
                    apr_pool_t *pool)
 {
   svn_commit_info_t *commit_info = NULL;
   svn_error_t *err;
 
   err = svn_client_commit3(&commit_info, targets, recurse, keep_locks,
-                           ctx, pool);
+                           ctx, sig_path, pool);
   /* These structs have the same layout for the common fields. */
   *commit_info_p = (svn_client_commit_info_t *) commit_info;
   return svn_error_trace(err);
@@ -617,12 +621,13 @@ svn_client_commit(svn_client_commit_info_t **commit_info_p,
                   const apr_array_header_t *targets,
                   svn_boolean_t nonrecursive,
                   svn_client_ctx_t *ctx,
+                  const char *sig_path,
                   apr_pool_t *pool)
 {
   return svn_client_commit2(commit_info_p, targets,
                             ! nonrecursive,
                             TRUE,
-                            ctx, pool);
+                            ctx, sig_path, pool);
 }
 
 /*** From copy.c ***/

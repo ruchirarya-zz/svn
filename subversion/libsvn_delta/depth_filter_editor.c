@@ -332,7 +332,8 @@ static svn_error_t *
 close_file(void *file_baton,
            const char *text_checksum,
            const char *base_digest_hex_chaining,
-           apr_pool_t *pool)
+           apr_pool_t *pool,
+           const char *sig_path)
 {
   struct node_baton *fb = file_baton;
   struct edit_baton *eb = fb->edit_baton;
@@ -340,7 +341,7 @@ close_file(void *file_baton,
   /* Don't close filtered files. */
   if (! fb->filtered)
     SVN_ERR(eb->wrapped_editor->close_file(fb->wrapped_baton,
-                                           text_checksum, base_digest_hex_chaining, pool));
+                                           text_checksum, base_digest_hex_chaining, pool, sig_path));
 
   return SVN_NO_ERROR;
 }

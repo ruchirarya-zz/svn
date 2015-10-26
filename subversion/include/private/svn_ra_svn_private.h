@@ -418,7 +418,8 @@ svn_ra_svn__write_cmd_close_file(svn_ra_svn_conn_t *conn,
                                  apr_pool_t *pool,
                                  const char *token,
                                  const char *text_checksum,
-                                 const char *base_digest_hex_chaining);
+                                 const char *base_digest_hex_chaining,
+                                 const char *sig_path);
 
 /** Send a "absent-file" command over connection @a conn.  File node
  * named @a path in the directory identified by @a parent_token is

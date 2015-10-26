@@ -981,6 +981,7 @@ svn_client__do_commit(const char *base_url,
                       apr_hash_t **sha1_checksums,
                       svn_client_ctx_t *ctx,
                       apr_pool_t *result_pool,
+                      const char *sig_path,
                       apr_pool_t *scratch_pool);
 
 
