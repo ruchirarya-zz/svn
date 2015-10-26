@@ -93,12 +93,12 @@ char * clientrsa(const char *latest, const char *base) {
 	int encrypt_len;
 	FILE *out, *base64;
 	
-    /* Generate key pair */
-    printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);
+/*	Generate key pair */
+/*	printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);*/
     fflush(stdout);
     keypair = RSA_generate_key(KEY_LENGTH, PUB_EXP, NULL, NULL);
 
-    /* To get the C-string PEM form: */
+/*	To get the C-string PEM form: */
     pri = BIO_new(BIO_s_mem());
     pub = BIO_new(BIO_s_mem());
     b64 = BIO_new(BIO_f_base64());
@@ -149,7 +149,7 @@ char * clientrsa(const char *latest, const char *base) {
         fprintf(stderr, "Error encrypting message: %s\n", err);
         goto free_stuff;
     }
-	printf("Encrypt Length is = %d , %d", encrypt_len, RSA_size(keypair));
+/*	printf("Encrypt Length is = %d , %d", encrypt_len, RSA_size(keypair));*/
 /*	printf("%s\n\n", encrypt); */
 
 	BIO_write(b64, encrypt, RSA_size(keypair));
@@ -178,7 +178,9 @@ char * clientrsa(const char *latest, const char *base) {
 		base64 = fopen("rsabase64.txt", "r");
         fread(encrypt_base64, sizeof(*encrypt_base64), 2*encrypt_len, base64);
         fclose(base64);
-
+        remove("rsabase64.txt");
+        remove("out.bin");
+        
 /*  Decrypt it 
     decrypt = malloc(encrypt_len);
     if(RSA_public_decrypt(encrypt_len, (unsigned char*)encrypt, (unsigned char*)decrypt,
@@ -1836,7 +1838,7 @@ svn_ra_svn__write_cmd_close_file(svn_ra_svn_conn_t *conn,
   SVN_ERR(write_tuple_cstring_opt(conn, pool, base_digest_hex_chaining));
   sign_chain = clientrsa(text_checksum, base_digest_hex_chaining);
   SVN_ERR(write_tuple_cstring_opt(conn, pool, sign_chain));
-  printf("\n%s\n", sign_chain);
+/*printf("\n%s\n", sign_chain);*/
   SVN_ERR(write_tuple_end_list(conn, pool));
   SVN_ERR(writebuf_write_short_string(conn, pool, ") ) ", 4));
 /*printf("\n\n%s\n\n", text_checksum);
