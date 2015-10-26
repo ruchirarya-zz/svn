@@ -73,6 +73,9 @@
 # include <openssl/pem.h>
 # include <openssl/bn.h>
 
+#define KEY_LENGTH  2048
+#define PUB_EXP     3
+
 
 /*** Option Processing ***/
 
@@ -147,7 +150,8 @@ typedef enum svn_cl__longopt_t {
   opt_include_externals,
   opt_show_inherited_props,
   opt_search,
-  opt_search_and
+  opt_search_and,
+  opt_gen_key_pairs
 } svn_cl__longopt_t;
 
 
@@ -163,6 +167,7 @@ const apr_getopt_option_t svn_cl__options[] =
   {"help",          'h', 0, N_("show help on a subcommand")},
   {NULL,            '?', 0, N_("show help on a subcommand")},
   {"message",       'm', 1, N_("specify log message ARG")},
+  {"key-pairs",      opt_gen_key_pairs, 0, N_("generate Public/Private Key pairs using RSA")},
   {"quiet",         'q', 0, N_("print nothing, or only summary information")},
   {"recursive",     'R', 0, N_("descend recursively, same as --depth=infinity")},
   {"non-recursive", 'N', 0, N_("obsolete; try --depth=files or --depth=immediates")},
@@ -401,8 +406,8 @@ const apr_getopt_option_t svn_cl__options[] =
   */
 
   {"cl",            opt_changelist, 1, NULL},
-  {"signature",       's', 0, N_("use signature to digitally sign changes to be committed")},
-  {"verify",       'y', 0, N_("verify signature of committed changes")},
+  {"signature",       's', 0, N_("use private key to digitally sign changes to be committed")},
+  {"verify",       'y', 0, N_("verify signature of committed changes using public keys")},
 
   {0,               0, 0, 0},
 };
@@ -1642,6 +1647,12 @@ const svn_opt_subcommand_desc2_t svn_cl__cmd_table[] =
      "\n"
      "  Local modifications are preserved.\n"),
     { 'q' } },
+    
+  { "keys", svn_cl__keys, {0}, N_
+    ("Generates the Public/Private Key pairs.\n"
+     "usage: keys\n"
+     "\n"),
+    { opt_gen_key_pairs } },
 
   { NULL, NULL, {0}, NULL, {0} }
 };
@@ -2303,6 +2314,11 @@ sub_main(int argc, const char *argv[], apr_pool_t *pool)
         break;
       case opt_search_and:
         add_search_pattern_to_latest_group(&opt_state, opt_arg, pool);
+      case opt_gen_key_pairs:
+        {
+        svn_cl__keys(NULL, NULL, NULL);
+		}
+		break;
       default:
         /* Hmmm. Perhaps this would be a good place to squirrel away
            opts that commands like svn diff might need. Hmmm indeed. */
@@ -2988,8 +3004,7 @@ main(int argc, const char *argv[])
 {
   apr_pool_t *pool;
   int exit_code;
-  RSA *rsa = NULL;
-  ENGINE *e = NULL;
+
   /* Initialize the app. */
   if (svn_cmdline_init("svn", stderr) != EXIT_SUCCESS)
     return EXIT_FAILURE;

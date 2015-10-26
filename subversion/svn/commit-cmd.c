@@ -42,7 +42,71 @@
 
 #include "svn_private_config.h"
 
+# include <openssl/bio.h>
+# include <openssl/err.h>
+# include <openssl/rsa.h>
+# include <openssl/evp.h>
+# include <openssl/x509.h>
+# include <openssl/pem.h>
+# include <openssl/bn.h>
+# include <stdlib.h>
 
+#define KEY_LENGTH  2048
+#define PUB_EXP     3
+
+svn_error_t *
+svn_cl__keys(apr_getopt_t *os,
+                 void *baton,
+                 apr_pool_t *scratch_pool)
+        {
+			    size_t pri_len;            /* Length of private key*/
+				size_t pub_len;            /* Length of public key*/
+				char   *pri_key;           /* Private key*/
+				char   *pub_key;           /* Public key*/
+/*				char   *sslerr;               Buffer for any error messages*/
+				FILE *out;				   /* File pointer*/
+				RSA *keypair;
+				BIO *pri, *pub;
+				
+				/* Generate key pair*/
+				printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);
+				fflush(stdout);
+				keypair = RSA_generate_key(KEY_LENGTH, PUB_EXP, NULL, NULL);
+
+				/* To get the C-string PEM form:*/
+				pri = BIO_new(BIO_s_mem());
+				pub = BIO_new(BIO_s_mem());
+
+				PEM_write_bio_RSAPrivateKey(pri, keypair, NULL, NULL, 0, NULL, NULL);
+				PEM_write_bio_RSAPublicKey(pub, keypair);
+
+				pri_len = BIO_pending(pri);
+				pub_len = BIO_pending(pub);
+
+				pri_key = malloc(pri_len + 1);
+				pub_key = malloc(pub_len + 1);
+
+				BIO_read(pri, pri_key, pri_len);
+				BIO_read(pub, pub_key, pub_len);
+
+				pri_key[pri_len] = '\0';
+				pub_key[pub_len] = '\0';
+				
+				out = fopen("private.pem", "w");
+				fwrite(pri_key, sizeof(*pri_key),  pri_len, out);
+				fclose(out);
+				
+				out = fopen("public.pem", "w");
+				fwrite(pub_key, sizeof(*pub_key),  pub_len, out);
+				fclose(out);
+				
+				printf("\nPrivate Key has been saved in file \"private.pem\".");
+				printf("\nPublic Key has been saved in file \"public.pem\".");
+				printf("\nDo not share your Private Key with anybody.\n");
+			/*	printf("\n%s\n%s\n", pri_key, pub_key); */
+			exit(0);
+		}
+	
 
 /* Wrapper notify_func2 function and baton for warning about
    reduced-depth commits of copied directories.  */

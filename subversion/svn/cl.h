@@ -282,8 +282,8 @@ svn_opt_subcommand_t
   svn_cl__switch,
   svn_cl__unlock,
   svn_cl__update,
-  svn_cl__upgrade;
-
+  svn_cl__upgrade,
+  svn_cl__keys;
 
 /* See definition in svn.c for documentation. */
 extern const svn_opt_subcommand_desc2_t svn_cl__cmd_table[];
