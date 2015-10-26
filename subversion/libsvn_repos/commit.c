@@ -620,7 +620,9 @@ change_file_prop(void *file_baton,
 static svn_error_t *
 close_file(void *file_baton,
            const char *text_digest,
-           apr_pool_t *pool)
+           const char *base_digest_hex_chaining,
+           apr_pool_t *pool,
+           const char *sig_path)
 {
   struct file_baton *fb = file_baton;
 

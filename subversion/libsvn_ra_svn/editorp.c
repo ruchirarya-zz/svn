@@ -787,12 +787,12 @@ static svn_error_t *ra_svn_handle_close_file(svn_ra_svn_conn_t *conn,
   const char *token;
   ra_svn_token_entry_t *entry;
   const char *text_checksum;
-  const char *base_digest_hex_chaining = NULL;
-  const char *sig_path = NULL;
+  const char *base_digest_hex_chaining;
+  const char *sig_path;
   
   /* Parse arguments and look up the file token. */
-  SVN_ERR(svn_ra_svn__parse_tuple(params, pool, "c(?c)",
-                                  &token, &text_checksum));
+  SVN_ERR(svn_ra_svn__parse_tuple(params, pool, "c(?ccc)",
+                                  &token, &text_checksum, &base_digest_hex_chaining, &sig_path));
   SVN_ERR(lookup_token(ds, token, TRUE, &entry));
 
   /* Close the file and destroy the baton. */
